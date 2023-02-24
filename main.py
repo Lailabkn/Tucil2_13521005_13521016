@@ -55,49 +55,97 @@ def find_closest_pair(points):
     return divide_conquer(points, points_y)[0]
 
 # input
-print("")
-print("")
-n = int(input("Masukkan jumlah titik: "))
-points = np.array([[random.randint(-1000, 1000), random.randint(-1000, 1000), random.randint(-1000, 100)] for i in range(n)])
 
-# cari sepasang titik terdekat dengan algoritma brute force
-start_time = time.time()
-brute_pair, brute_dist = brute_force(points)
-end_time = time.time()
+def tigaDimensi():
+    print("")
+    print("")
+    n = int(input("Masukkan jumlah titik: "))
+    points = np.array([[random.randint(-1000, 1000), random.randint(-1000, 1000), random.randint(-1000, 100)] for i in range(n)])
 
-print("")
-print("BRUTE FORCE")
-print("Brute Force Pair : ", brute_pair)
-print("Banyakmnya operasi perhitungan :", len(points)*(len(points)-1)/2)
-print("Jarak : ", brute_dist)
-print("Waktu eksekusi : ", end_time - start_time, "seconds")
+    # cari sepasang titik terdekat dengan algoritma brute force
+    start_time = time.time()
+    brute_pair, brute_dist = brute_force(points)
+    end_time = time.time()
+    banyakOPBrute = len(points)*(len(points)-1)/2
 
-# cari sepasang titik terdekat dengan algoritma divide and conquer
-start_time = time.time()
-divcon_pair = find_closest_pair(points)
-divcon_dist = dist(divcon_pair[0], divcon_pair[1])
-end_time = time.time()
+    print("")
+    print("BRUTE FORCE")
+    print("Brute Force Pair : ", brute_pair)
+    print("Banyaknya operasi perhitungan :", banyakOPBrute)
+    print("Jarak : ", brute_dist)
+    print("Waktu eksekusi : ", end_time - start_time, "detik")
 
-print("")
-print("")
-print("DIVIDE AND CONQUER")
-print("Divide and Conquer Pair : ", divcon_pair)
-print("Banyakmnya operasi perhitungan :", len(points)*np.log2(len(points)))
-print("Jarak : ", divcon_dist)
-print("Waktu eksekusi : ", end_time - start_time, "seconds")
+    # cari sepasang titik terdekat dengan algoritma divide and conquer
+    start_time = time.time()
+    divcon_pair = find_closest_pair(points)
+    divcon_dist = dist(divcon_pair[0], divcon_pair[1])
+    end_time = time.time()
+    banyakOPDivCon = len(points)*(len(points)-1)/2
+
+    print("")
+    print("")
+    print("DIVIDE AND CONQUER")
+    print("Divide and Conquer Pair : ", divcon_pair)
+    print("Banyaknya operasi perhitungan :", banyakOPDivCon)
+    print("Jarak : ", divcon_dist)
+    print("Waktu eksekusi : ", end_time - start_time, " detik")
+
+    # BONUS 1
+    # plot semua titik dalam bidang 3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(points[:,0], points[:,1], points[:,2], c='g', marker='o')
+
+    # plot sepasang titik terdekat dengan algoritma brute force
+    ax.plot([brute_pair[0][0], brute_pair[1][0]], [brute_pair[0][1], brute_pair[1][1]], [brute_pair[0][2], brute_pair[1][2]], c='r')
+
+    # plot sepasang titik terdekat dengan algoritma divide and conquer
+    ax.plot([divcon_pair[0][0], divcon_pair[1][0]], [divcon_pair[0][1], divcon_pair[1][1]], [divcon_pair[0][2], divcon_pair[1][2]], c='r')
+
+    plt.show()
+
+def nDimensi():
+    # BONUS 2
+    n = int(input("Masukkan jumlah vektor: "))
+    dim = int(input("Masukkan dimensi vektor: "))
+    vectors = np.array([[random.randint(-1000, 1000) for i in range(dim)] for j in range(n)])
+
+    start_time = time.time()
+    divcon_pair = find_closest_pair(vectors)
+    divcon_dist = dist(divcon_pair[0], divcon_pair[1])  
+    end_time = time.time()
+
+    print("Sepasang vektor terdekat: ")
+    for i in range(n):
+        for j in range(i+1, n) :
+            if divcon_dist == dist(vectors[i], vectors[j]):
+                print( "(", vectors[i],") dan (", vectors[j],")")
+                break
+        else:
+            continue
+        break
+    print("Jarak: ", divcon_dist)
+    print ("Banyaknya operasi perhitungan: ", n*(n-1)/2)
+    print("Waktu eksekusi: ", end_time - start_time, "detik")
 
 
-# BONUS 1
-# plot semua titik dalam bidang 3D
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.scatter(points[:,0], points[:,1], points[:,2], c='g', marker='o')
+def main():
+    while True:
+        print("==============================================================================")
+        print("Program Mencari Pasangan Titik Terdekat 3D dengan Algoritma Divide and Conquer")
+        print("==============================================================================")
+        print("1. 3 Dimensi")
+        print("2. n Dimensi")
+        print("4. Keluar")
+        pilihan = int(input("Masukkan pilihan: "))
+        if pilihan == 1:
+            tigaDimensi()
+        elif pilihan == 2:
+            nDimensi()
+        elif pilihan == 3:
+            print("Terima kasih")
+        else:
+            print("Pilihan tidak valid")
 
-# plot sepasang titik terdekat dengan algoritma brute force
-ax.plot([brute_pair[0][0], brute_pair[1][0]], [brute_pair[0][1], brute_pair[1][1]], [brute_pair[0][2], brute_pair[1][2]], c='r')
 
-# plot sepasang titik terdekat dengan algoritma divide and conquer
-ax.plot([divcon_pair[0][0], divcon_pair[1][0]], [divcon_pair[0][1], divcon_pair[1][1]], [divcon_pair[0][2], divcon_pair[1][2]], c='r')
-
-plt.show()
-
+main()
