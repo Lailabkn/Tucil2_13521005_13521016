@@ -4,6 +4,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import random
 import time
 
+c = 0
+
 def dist(p1, p2):
     # menghitung jarak antara dua titik dalam ruang 3D
     return np.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 + (p1[2]-p2[2])**2)
@@ -20,9 +22,11 @@ def brute_force(points):
     return pair, min_dist
 
 def find_closest_pair(points):
+    global c
     # pencarian sepasang titik terdekat dengan algoritma divide and conquer
     def divide_conquer(points_x, points_y):
         n = len(points_x)
+        global c
         if n <= 3:
             return brute_force(points_x)
         else:
@@ -44,6 +48,7 @@ def find_closest_pair(points):
                 j = i + 1
                 while j < strip_n and strip_points[j][1] - strip_points[i][1] < closest_dist:
                     d = dist(strip_points[i], strip_points[j])
+                    c += 1
                     if d < closest_dist:
                         closest_dist = d
                         closest_pair = (strip_points[i], strip_points[j])
@@ -80,13 +85,12 @@ def tigaDimensi():
     divcon_pair = find_closest_pair(points)
     divcon_dist = dist(divcon_pair[0], divcon_pair[1])
     end_time = time.time()
-    banyakOPDivCon = len(points)*(len(points)-1)/2
 
     print("")
     print("")
     print("DIVIDE AND CONQUER")
     print("Divide and Conquer Pair : ", divcon_pair)
-    print("Banyaknya operasi perhitungan :", banyakOPDivCon)
+    print("Banyaknya operasi perhitungan :", c)
     print("Jarak : ", divcon_dist)
     print("Waktu eksekusi : ", end_time - start_time, " detik")
 
@@ -106,27 +110,56 @@ def tigaDimensi():
 
 def nDimensi():
     # BONUS 2
-    n = int(input("Masukkan jumlah vektor: "))
-    dim = int(input("Masukkan dimensi vektor: "))
-    vectors = np.array([[random.randint(-1000, 1000) for i in range(dim)] for j in range(n)])
+    n = int(input("Masukkan jumlah titik : "))
+    dim = int(input("Masukkan dimensi : "))
+    points = np.array([[random.randint(-1000, 1000) for i in range(dim)] for j in range(n)])
+
+    # cari sepasang titik terdekat dengan algoritma brute force
+    start_time = time.time()
+    brute_pair, brute_dist = brute_force(points)
+    end_time = time.time()
+    banyakOPBrute = len(points)*(len(points)-1)/2
+
+    print("")
+    print("BRUTE FORCE")
+    print("Brute Force Pair : ", brute_pair)
+    print("Banyaknya operasi perhitungan :", banyakOPBrute)
+    print("Jarak : ", brute_dist)
+    print("Waktu eksekusi : ", end_time - start_time, "detik")
 
     start_time = time.time()
-    divcon_pair = find_closest_pair(vectors)
+    divcon_pair = find_closest_pair(points)
     divcon_dist = dist(divcon_pair[0], divcon_pair[1])  
     end_time = time.time()
 
-    print("Sepasang vektor terdekat: ")
+    print("")
+    print("DIVIDE AND CONQUER")
+    print("Divide and Conquer Pair : ")
     for i in range(n):
         for j in range(i+1, n) :
-            if divcon_dist == dist(vectors[i], vectors[j]):
-                print( "(", vectors[i],") dan (", vectors[j],")")
+            if divcon_dist == dist(points[i], points[j]):
+                print( "(", points[i],") dan (", points[j],")")
                 break
         else:
             continue
         break
     print("Jarak: ", divcon_dist)
-    print ("Banyaknya operasi perhitungan: ", n*(n-1)/2)
+    print ("Banyaknya operasi perhitungan: ", c)
     print("Waktu eksekusi: ", end_time - start_time, "detik")
+
+    # BONUS 1
+    # plot semua titik dalam bidang 3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(points[:,0], points[:,1], points[:,2], c='g', marker='o')
+
+    # plot sepasang titik terdekat dengan algoritma brute force
+    ax.plot([brute_pair[0][0], brute_pair[1][0]], [brute_pair[0][1], brute_pair[1][1]], [brute_pair[0][2], brute_pair[1][2]], c='r')
+
+    # plot sepasang titik terdekat dengan algoritma divide and conquer
+    ax.plot([divcon_pair[0][0], divcon_pair[1][0]], [divcon_pair[0][1], divcon_pair[1][1]], [divcon_pair[0][2], divcon_pair[1][2]], c='r')
+
+    plt.show()
 
 
 def main():
@@ -136,7 +169,7 @@ def main():
         print("==============================================================================")
         print("1. 3 Dimensi")
         print("2. n Dimensi")
-        print("4. Keluar")
+        print("3. Keluar")
         pilihan = int(input("Masukkan pilihan: "))
         if pilihan == 1:
             tigaDimensi()
@@ -144,6 +177,7 @@ def main():
             nDimensi()
         elif pilihan == 3:
             print("Terima kasih")
+            break
         else:
             print("Pilihan tidak valid")
 
